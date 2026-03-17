@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<title>Lector de paraules - 3 síl·labes</title>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin-top: 100px;
+  }
+
+  #paraula {
+    font-size: 60px;
+    filter: blur(10px);
+    margin-bottom: 40px;
+  }
+
+  button {
+    font-size: 18px;
+    padding: 10px 15px;
+    margin: 5px;
+  }
+</style>
+</head>
+
+<body>
+
+<div id="paraula"></div>
+
+<button onclick="mostrarParaula()">👁️</button>
+<button onclick="llegirParaula()">▶️ Paraula</button>
+<button onclick="llegirSilLabes()">▶️ Síl·labes</button>
+<button onclick="seguentParaula()">➡️</button>
+
+<script>
+const paraules = [
+  { text: "camino", sillabes: ["ca","mi","no"] },
+  { text: "pelota", sillabes: ["pe","lo","ta"] },
+  { text: "zapato", sillabes: ["za","pa","to"] },
+  { text: "tomate", sillabes: ["to","ma","te"] },
+  { text: "banana", sillabes: ["ba","na","na"] },
+
+  { text: "cocina", sillabes: ["co","ci","na"] },
+  { text: "ventana", sillabes: ["ven","ta","na"] },
+  { text: "paloma", sillabes: ["pa","lo","ma"] },
+  { text: "semana", sillabes: ["se","ma","na"] },
+  { text: "marino", sillabes: ["ma","ri","no"] },
+
+  { text: "camisa", sillabes: ["ca","mi","sa"] },
+  { text: "maleta", sillabes: ["ma","le","ta"] },
+  { text: "moneda", sillabes: ["mo","ne","da"] },
+  { text: "cabeza", sillabes: ["ca","be","za"] },
+  { text: "oreja", sillabes: ["o","re","ja"] },
+
+  { text: "rodilla", sillabes: ["ro","di","lla"] },
+  { text: "camello", sillabes: ["ca","me","llo"] },
+  { text: "conejo", sillabes: ["co","ne","jo"] },
+  { text: "oveja", sillabes: ["o","ve","ja"] },
+  { text: "caballo", sillabes: ["ca","ba","llo"] },
+
+  { text: "gallina", sillabes: ["ga","lli","na"] },
+  { text: "palacio", sillabes: ["pa","la","cio"] },
+  { text: "escoba", sillabes: ["es","co","ba"] },
+  { text: "espada", sillabes: ["es","pa","da"] },
+  { text: "escudo", sillabes: ["es","cu","do"] },
+
+  { text: "amigo", sillabes: ["a","mi","go"] },
+  { text: "amiga", sillabes: ["a","mi","ga"] },
+  { text: "herida", sillabes: ["he","ri","da"] },
+  { text: "comida", sillabes: ["co","mi","da"] },
+  { text: "bebida", sillabes: ["be","bi","da"] },
+
+  { text: "salida", sillabes: ["sa","li","da"] },
+  { text: "entrada", sillabes: ["en","tra","da"] },
+  { text: "llegada", sillabes: ["lle","ga","da"] },
+  { text: "mirada", sillabes: ["mi","ra","da"] },
+  { text: "sonido", sillabes: ["so","ni","do"] },
+
+  { text: "rapido", sillabes: ["ra","pi","do"] },
+  { text: "timido", sillabes: ["ti","mi","do"] },
+  { text: "valido", sillabes: ["va","li","do"] },
+  { text: "numero", sillabes: ["nu","me","ro"] },
+  { text: "calido", sillabes: ["ca","li","do"] },
+
+  { text: "humano", sillabes: ["hu","ma","no"] },
+  { text: "planeta", sillabes: ["pla","ne","ta"] },
+  { text: "escena", sillabes: ["es","ce","na"] },
+  { text: "cadena", sillabes: ["ca","de","na"] },
+  { text: "cartera", sillabes: ["car","te","ra"] },
+
+  { text: "caricia", sillabes: ["ca","ri","cia"] },
+  { text: "noticia", sillabes: ["no","ti","cia"] },
+  { text: "policia", sillabes: ["po","li","cia"] }
+];
+let index = 0;
+const paraulaDiv = document.getElementById("paraula");
+let veus = [];
+
+function carregarVeus() {
+  veus = speechSynthesis.getVoices();
+}
+carregarVeus();
+speechSynthesis.onvoiceschanged = carregarVeus;
+
+function indexAleatoriDiferent() {
+  if (paraules.length === 1) return 0;
+
+  let nouIndex;
+  do {
+    nouIndex = Math.floor(Math.random() * paraules.length);
+  } while (nouIndex === index);
+
+  return nouIndex;
+}
+
+function actualitzarParaula() {
+  paraulaDiv.textContent = paraules[index].text;
+  paraulaDiv.style.filter = "blur(10px)";
+}
+
+function mostrarParaula() {
+  paraulaDiv.style.filter = "blur(0)";
+}
+
+function parlar(text, velocitat) {
+  speechSynthesis.cancel();
+
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = "ca-ES";
+  u.rate = velocitat;
+
+  const veu = veus.find(v => v.lang.startsWith("ca")) ||
+              veus.find(v => v.lang.startsWith("es"));
+
+  if (veu) u.voice = veu;
+
+  speechSynthesis.speak(u);
+}
+
+function llegirParaula() {
+  parlar(paraules[index].text, 0.9);
+}
+
+function llegirSilLabes() {
+  const silLabes = paraules[index].sillabes;
+  speechSynthesis.cancel();
+
+  silLabes.forEach((sil, i) => {
+    setTimeout(() => {
+      const u = new SpeechSynthesisUtterance(sil);
+      u.lang = "ca-ES";
+      u.rate = 0.6;
+
+      const veu = veus.find(v => v.lang.startsWith("ca")) ||
+                  veus.find(v => v.lang.startsWith("es"));
+
+      if (veu) u.voice = veu;
+
+      speechSynthesis.speak(u);
+    }, i * 900);
+  });
+}
+
+function seguentParaula() {
+  index = indexAleatoriDiferent();
+  actualitzarParaula();
+}
+
+index = Math.floor(Math.random() * paraules.length);
+actualitzarParaula();
+</script>
+
+</body>
+</html>
