@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<title>Lector de paraules - 3 síl·labes</title>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin-top: 100px;
+  }
+
+  #paraula {
+    font-size: 60px;
+    filter: blur(10px);
+    margin-bottom: 40px;
+  }
+
+  button {
+    font-size: 18px;
+    padding: 10px 15px;
+    margin: 5px;
+  }
+</style>
+</head>
+
+<body>
+
+<div id="paraula"></div>
+
+<button onclick="mostrarParaula()">👁️</button>
+<button onclick="llegirParaula()">▶️ Paraula</button>
+<button onclick="llegirSilLabes()">▶️ Síl·labes</button>
+<button onclick="seguentParaula()">➡️</button>
+
+<script>
+const paraules = [
+  { text: "camino", sillabes: ["ca","mi","no"] },
+  { text: "pelota", sillabes: ["pe","lo","ta"] },
+  { text: "zapato", sillabes: ["za","pa","to"] },
+  { text: "ventana", sillabes: ["ven","ta","na"] },
+  { text: "cocina", sillabes: ["co","ci","na"] },
+
+  { text: "tomate", sillabes: ["to","ma","te"] },
+  { text: "banana", sillabes: ["ba","na","na"] },
+  { text: "palabra", sillabes: ["pa","la","bra"] },
+  { text: "escuela", sillabes: ["es","cue","la"] },
+  { text: "cuaderno", sillabes: ["cua","der","no"] },
+
+  { text: "libreta", sillabes: ["li","bre","ta"] },
+  { text: "profesor", sillabes: ["pro","fe","sor"] },
+  { text: "alumno", sillabes: ["a","lum","no"] },
+  { text: "familia", sillabes: ["fa","mi","lia"] },
+  { text: "hermano", sillabes: ["her","ma","no"] },
+
+  { text: "abuelo", sillabes: ["a","bue","lo"] },
+  { text: "abuela", sillabes: ["a","bue","la"] },
+  { text: "amigo", sillabes: ["a","mi","go"] },
+  { text: "amiga", sillabes: ["a","mi","ga"] },
+  { text: "comida", sillabes: ["co","mi","da"] },
+
+  { text: "bebida", sillabes: ["be","bi","da"] },
+  { text: "cuchara", sillabes: ["cu","cha","ra"] },
+  { text: "tenedor", sillabes: ["te","ne","dor"] },
+  { text: "plato", sillabes: ["pla","to",""] },
+  { text: "puerta", sillabes: ["puer","ta",""] },
+
+  { text: "tejado", sillabes: ["te","ja","do"] },
+  { text: "paredes", sillabes: ["pa","re","des"] },
+  { text: "silla", sillabes: ["si","lla",""] },
+  { text: "mesa", sillabes: ["me","sa",""] },
+  { text: "jardin", sillabes: ["jar","din",""] },
+
+  { text: "arboles", sillabes: ["ar","bo","les"] },
+  { text: "semana", sillabes: ["se","ma","na"] },
+  { text: "domingo", sillabes: ["do","min","go"] },
+  { text: "sabado", sillabes: ["sa","ba","do"] },
+  { text: "lunes", sillabes: ["lu","nes",""] },
+
+  { text: "martes", sillabes: ["mar","tes",""] },
+  { text: "viernes", sillabes: ["vier","nes",""] },
+  { text: "verano", sillabes: ["ve","ra","no"] },
+  { text: "invierno", sillabes: ["in","vier","no"] },
+  { text: "otonio", sillabes: ["o","to","nio"] },
+
+  { text: "primero", sillabes: ["pri","me","ro"] },
+  { text: "segundo", sillabes: ["se","gun","do"] },
+  { text: "tercero", sillabes: ["ter","ce","ro"] },
+  { text: "cuarto", sillabes: ["cuar","to",""] },
+  { text: "quinto", sillabes: ["quin","to",""] },
+
+  { text: "sexto", sillabes: ["sex","to",""] },
+  { text: "octavo", sillabes: ["oc","ta","vo"] },
+  { text: "noveno", sillabes: ["no","ve","no"] },
+  { text: "decimo", sillabes: ["de","ci","mo"] },
+  { text: "rapido", sillabes: ["ra","pi","do"] }
+];
+
+let index = 0;
+const paraulaDiv = document.getElementById("paraula");
+let veus = [];
+
+function carregarVeus() {
+  veus = speechSynthesis.getVoices();
+}
+carregarVeus();
+speechSynthesis.onvoiceschanged = carregarVeus;
+
+function indexAleatoriDiferent() {
+  if (paraules.length === 1) return 0;
+
+  let nouIndex;
+  do {
+    nouIndex = Math.floor(Math.random() * paraules.length);
+  } while (nouIndex === index);
+
+  return nouIndex;
+}
+
+function actualitzarParaula() {
+  paraulaDiv.textContent = paraules[index].text;
+  paraulaDiv.style.filter = "blur(10px)";
+}
+
+function mostrarParaula() {
+  paraulaDiv.style.filter = "blur(0)";
+}
+
+function parlar(text, velocitat) {
+  speechSynthesis.cancel();
+
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = "ca-ES";
+  u.rate = velocitat;
+
+  const veu = veus.find(v => v.lang.startsWith("ca")) ||
+              veus.find(v => v.lang.startsWith("es"));
+
+  if (veu) u.voice = veu;
+
+  speechSynthesis.speak(u);
+}
+
+function llegirParaula() {
+  parlar(paraules[index].text, 0.9);
+}
+
+function llegirSilLabes() {
+  const silLabes = paraules[index].sillabes;
+  speechSynthesis.cancel();
+
+  silLabes.forEach((sil, i) => {
+    setTimeout(() => {
+      const u = new SpeechSynthesisUtterance(sil);
+      u.lang = "ca-ES";
+      u.rate = 0.6;
+
+      const veu = veus.find(v => v.lang.startsWith("ca")) ||
+                  veus.find(v => v.lang.startsWith("es"));
+
+      if (veu) u.voice = veu;
+
+      speechSynthesis.speak(u);
+    }, i * 900);
+  });
+}
+
+function seguentParaula() {
+  index = indexAleatoriDiferent();
+  actualitzarParaula();
+}
+
+index = Math.floor(Math.random() * paraules.length);
+actualitzarParaula();
+</script>
+
+</body>
+</html>
